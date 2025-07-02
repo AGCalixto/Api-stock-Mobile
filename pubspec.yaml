@@ -59,10 +59,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  assets:
-    - assets/google_logo.png
-    - assets/facebook_logo.png
-    - assets/ue_logo.png
+  #assets:
+  #  - assets/google_logo.png
+  #  - assets/facebook_logo.png
+  #  - assets/ue_logo.png
 
   fonts:
     - family: Amiko
