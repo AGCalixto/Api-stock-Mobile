@@ -13,23 +13,17 @@ class StockCard extends StatelessWidget {
     this.showDetails = false,
   });
 
+  bool get isUp => stock.change >= 0;
+  Color get changeColor => isUp ? AppColors.upTrend : AppColors.downTrend;
+  String get changeSymbol => isUp ? '▲' : '▼';
+
   @override
   Widget build(BuildContext context) {
-    final bool isUp = stock.change >= 0;
-    final Color color = isUp ? AppColors.upTrend : AppColors.downTrend;
-    final String symbol = isUp ? '▲' : '▼';
-
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: AppColors.cardBackground,
       child: InkWell(
-        onTap: () {
-          Navigator.pushNamed(
-            context,
-            '/stock-detail',
-            arguments: stock.symbol,
-          );
-        },
+        onTap: () => Navigator.pushNamed(context, '/stock-detail', arguments: stock.symbol),
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -37,21 +31,13 @@ class StockCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(stock.symbol, style: Theme.of(context).textTheme.headlineSmall),
-              Text(stock.name, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-              )),
+              Text(stock.name, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '\$${stock.price.toStringAsFixed(2)}',
-                    style: AppStyles.stockPrice,
-                  ),
-                  Text(
-                    '$symbol ${stock.changePercent.abs().toStringAsFixed(2)}%',
-                    style: TextStyle(color: color, fontWeight: FontWeight.bold),
-                  ),
+                  Text('\$${stock.price.toStringAsFixed(2)}', style: AppStyles.stockPrice),
+                  Text('$changeSymbol ${stock.changePercent.abs().toStringAsFixed(2)}%', style: TextStyle(color: changeColor, fontWeight: FontWeight.bold)),
                 ],
               ),
               if (showDetails) ...[
@@ -59,10 +45,8 @@ class StockCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Market Cap: \$${(stock.marketCap / 1e9).toStringAsFixed(1)}B',
-                        style: Theme.of(context).textTheme.bodySmall),
-                    Text('Volume: ${(stock.volume / 1e6).toStringAsFixed(1)}M',
-                        style: Theme.of(context).textTheme.bodySmall),
+                    Text('Market Cap: \$${(stock.marketCap / 1e9).toStringAsFixed(1)}B', style: Theme.of(context).textTheme.bodySmall),
+                    Text('Volume: ${(stock.volume / 1e6).toStringAsFixed(1)}M', style: Theme.of(context).textTheme.bodySmall),
                   ],
                 ),
               ],

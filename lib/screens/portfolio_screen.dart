@@ -35,16 +35,15 @@ class PortfolioScreen extends StatelessWidget {
         low: 245.12,
         peRatio: 34.12,
       ),
-      // Add more holdings
+      // Add more holdings as needed
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Portfolio'),
-      ),
+      appBar: AppBar(title: const Text('Portfolio')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const PortfolioSummaryCard(
               accountBalance: 25901,
@@ -57,38 +56,69 @@ class PortfolioScreen extends StatelessWidget {
               totalGainLossPercent: 23.5,
             ),
             const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text('Your Holdings', style: AppStyles.sectionHeader),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text('View All'),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ...holdings.map((stock) => Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: StockCard(stock: stock, showDetails: true),
-            )).toList(),
+            _HoldingsList(holdings: holdings),
             const SizedBox(height: 32),
             const Text('Portfolio Performance', style: AppStyles.sectionHeader),
             const SizedBox(height: 16),
-            Container(
-              height: 300,
-              decoration: BoxDecoration(
-                color: AppColors.cardBackground,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Center(
-                child: Text(
-                  'Performance Chart Placeholder',
-                  style: TextStyle(color: AppColors.textSecondary),
-                ),
-              ),
+            const _PerformanceChart(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HoldingsList extends StatelessWidget {
+  final List<Stock> holdings;
+
+  const _HoldingsList({required this.holdings});
+
+  @override
+  Widget build(BuildContext context) {
+    if (holdings.isEmpty) {
+      return const Center(child: Text('No holdings available.'));
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text('Your Holdings', style: AppStyles.sectionHeader),
+            TextButton(
+              onPressed: () {},
+              child: const Text('View All'),
             ),
           ],
+        ),
+        const SizedBox(height: 16),
+        ...holdings.map(
+              (stock) => Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: StockCard(stock: stock, showDetails: true),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _PerformanceChart extends StatelessWidget {
+  const _PerformanceChart();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 300,
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Center(
+        child: Text(
+          'Performance Chart Placeholder',
+          style: TextStyle(color: AppColors.textSecondary),
         ),
       ),
     );

@@ -17,11 +17,13 @@ class MarketCard extends StatelessWidget {
     required this.changePercent,
   });
 
+  Color getChangeColor() => change >= 0 ? AppColors.upTrend : AppColors.downTrend;
+  String getChangeSymbol() => change >= 0 ? '▲' : '▼';
+
   @override
   Widget build(BuildContext context) {
-    final bool isUp = change >= 0;
-    final Color color = isUp ? AppColors.upTrend : AppColors.downTrend;
-    final String symbol = isUp ? '▲' : '▼';
+    final color = getChangeColor();
+    final symbol = getChangeSymbol();
 
     return Container(
       decoration: AppStyles.cardDecoration,
@@ -34,10 +36,7 @@ class MarketCard extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                Text(
-                  index.toStringAsFixed(2),
-                  style: AppStyles.stockPrice,
-                ),
+                Text(index.toStringAsFixed(2), style: AppStyles.stockPrice),
                 const SizedBox(width: 8),
                 Text(
                   '$symbol ${change.abs().toStringAsFixed(2)} (${changePercent.abs().toStringAsFixed(2)}%)',
@@ -47,9 +46,7 @@ class MarketCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/stocks');
-              },
+              onPressed: () => Navigator.pushNamed(context, '/stocks'),
               style: AppStyles.primaryButton,
               child: const Text('View All Stocks'),
             ),

@@ -26,6 +26,9 @@ class PortfolioSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final secondaryStyle = const TextStyle(color: AppColors.textSecondary);
+    final upTrendStyle = const TextStyle(color: AppColors.upTrend, fontWeight: FontWeight.bold);
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
@@ -44,8 +47,8 @@ class PortfolioSummaryCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Account Balance', style: TextStyle(color: AppColors.textSecondary)),
-                Text('\$$accountBalance.toStringAsFixed(2)}', style: AppStyles.portfolioValue),
+                Text('Account Balance', style: secondaryStyle),
+                Text('\$${accountBalance.toStringAsFixed(2)}', style: AppStyles.portfolioValue),
               ],
             ),
             const Divider(color: AppColors.accent, height: 32),
@@ -55,13 +58,13 @@ class PortfolioSummaryCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Portfolio Value', style: TextStyle(color: AppColors.textSecondary)),
+                      Text('Portfolio Value', style: secondaryStyle),
                       const SizedBox(height: 4),
-                      Text('\$$portfolioValue.toStringAsFixed(2)}', style: AppStyles.portfolioValue),
+                      Text('\$${portfolioValue.toStringAsFixed(2)}', style: AppStyles.portfolioValue),
                       const SizedBox(height: 4),
                       Text(
-                        '▲ \$$portfolioChange.toStringAsFixed(2)} (${portfolioChangePercent.toStringAsFixed(2)}%)',
-                        style: const TextStyle(color: AppColors.upTrend, fontWeight: FontWeight.bold),
+                        '▲ \$${portfolioChange.toStringAsFixed(2)} (${portfolioChangePercent.toStringAsFixed(2)}%)',
+                        style: upTrendStyle,
                       ),
                     ],
                   ),
@@ -70,13 +73,13 @@ class PortfolioSummaryCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Today\'s Change', style: TextStyle(color: AppColors.textSecondary)),
+                      Text('Today\'s Change', style: secondaryStyle),
                       const SizedBox(height: 4),
-                      Text('\$$dailyChange.toStringAsFixed(2)}', style: AppStyles.portfolioValue),
+                      Text('\$${dailyChange.toStringAsFixed(2)}', style: AppStyles.portfolioValue),
                       const SizedBox(height: 4),
                       Text(
                         '▲ ${dailyChangePercent.toStringAsFixed(2)}%',
-                        style: const TextStyle(color: AppColors.upTrend, fontWeight: FontWeight.bold),
+                        style: upTrendStyle,
                       ),
                     ],
                   ),
