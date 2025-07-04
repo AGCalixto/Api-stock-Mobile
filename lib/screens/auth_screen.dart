@@ -7,7 +7,9 @@ class AuthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign In')),
+      appBar: AppBar(
+          title: const Text('Sign In'),
+          centerTitle: true,),
       body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: 500),
@@ -50,7 +52,7 @@ class _AuthHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Text(
       'Sign In to Your Account',
-      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF94A3B8)),
     );
   }
 }
@@ -61,6 +63,7 @@ class _EmailField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: const TextStyle(color: Color(0xFF94A3B8)), // Typed Text Color
       decoration: const InputDecoration(
         labelText: 'Email address',
         prefixIcon: Icon(Icons.email),
@@ -76,6 +79,7 @@ class _PasswordField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      style: const TextStyle(color: Color(0xFF94A3B8)), // Typed Text Color
       obscureText: true,
       decoration: const InputDecoration(
         labelText: 'Password',
@@ -134,26 +138,37 @@ class _SocialButtonsRow extends StatelessWidget {
         IconButton(
           iconSize: 48,
           onPressed: () {},
-          icon: Image.asset('assets/google_logo.png'), // make sure asset exists
+          icon: SizedBox(
+            width: 48,
+            height: 48,
+            child: Image.asset('assets/google_logo.png', fit: BoxFit.contain),
+          ),
         ),
         const SizedBox(width: 16),
         IconButton(
           iconSize: 48,
           onPressed: () {},
-          icon: Image.asset('assets/facebook_logo.png'), // make sure asset exists
+          icon: SizedBox(
+            width: 48,
+            height: 48,
+            child: Image.asset('assets/facebook_logo.png', fit: BoxFit.contain),
+          ),
         ),
       ],
     );
   }
 }
 
+
 class _SignUpPrompt extends StatelessWidget {
   const _SignUpPrompt();
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.center,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 8,
       children: [
         const Text("Don't have an account?"),
         TextButton(

@@ -8,6 +8,7 @@ class MarketCard extends StatelessWidget {
   final double index;
   final double change;
   final double changePercent;
+  final Color textColor;
 
   const MarketCard({
     super.key,
@@ -15,6 +16,7 @@ class MarketCard extends StatelessWidget {
     required this.index,
     required this.change,
     required this.changePercent,
+    this.textColor = Colors.white,
   });
 
   Color getChangeColor() => change >= 0 ? AppColors.upTrend : AppColors.downTrend;
@@ -32,11 +34,13 @@ class MarketCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(market, style: Theme.of(context).textTheme.headlineMedium),
+            Text(market,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: textColor)),
             const SizedBox(height: 8),
             Row(
               children: [
-                Text(index.toStringAsFixed(2), style: AppStyles.stockPrice),
+                Text(index.toStringAsFixed(2),
+                    style: AppStyles.stockPrice.copyWith(color: textColor)),
                 const SizedBox(width: 8),
                 Text(
                   '$symbol ${change.abs().toStringAsFixed(2)} (${changePercent.abs().toStringAsFixed(2)}%)',

@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
               market: 'NASDAQ',
               index: 14234.56,
               change: 234.12,
-              changePercent: 1.67,
+              changePercent: 1.67
             ),
             const SizedBox(height: 24),
             _TopStocksSection(topStocks: _topStocks),
@@ -112,7 +112,7 @@ class _HeroSection extends StatelessWidget {
         children: [
           Text(
             'Real-time Market Insights',
-            style: Theme.of(context).textTheme.displaySmall,
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(color:Colors.white),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),

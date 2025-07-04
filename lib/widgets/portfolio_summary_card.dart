@@ -11,6 +11,7 @@ class PortfolioSummaryCard extends StatelessWidget {
   final double dailyChangePercent;
   final double totalGainLoss;
   final double totalGainLossPercent;
+  final Color textColor;
 
   const PortfolioSummaryCard({
     super.key,
@@ -22,6 +23,7 @@ class PortfolioSummaryCard extends StatelessWidget {
     required this.dailyChangePercent,
     required this.totalGainLoss,
     required this.totalGainLossPercent,
+    this.textColor = const Color(0xFF94A3B8)
   });
 
   @override
@@ -48,7 +50,8 @@ class PortfolioSummaryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Account Balance', style: secondaryStyle),
-                Text('\$${accountBalance.toStringAsFixed(2)}', style: AppStyles.portfolioValue),
+                Text('\$${accountBalance.toStringAsFixed(2)}',
+                    style: AppStyles.portfolioValue.copyWith(color: textColor)),
               ],
             ),
             const Divider(color: AppColors.accent, height: 32),
@@ -60,7 +63,8 @@ class PortfolioSummaryCard extends StatelessWidget {
                     children: [
                       Text('Portfolio Value', style: secondaryStyle),
                       const SizedBox(height: 4),
-                      Text('\$${portfolioValue.toStringAsFixed(2)}', style: AppStyles.portfolioValue),
+                      Text('\$${portfolioValue.toStringAsFixed(2)}',
+                          style: AppStyles.portfolioValue.copyWith(color: textColor)),
                       const SizedBox(height: 4),
                       Text(
                         '▲ \$${portfolioChange.toStringAsFixed(2)} (${portfolioChangePercent.toStringAsFixed(2)}%)',
@@ -75,7 +79,8 @@ class PortfolioSummaryCard extends StatelessWidget {
                     children: [
                       Text('Today\'s Change', style: secondaryStyle),
                       const SizedBox(height: 4),
-                      Text('\$${dailyChange.toStringAsFixed(2)}', style: AppStyles.portfolioValue),
+                      Text('\$${dailyChange.toStringAsFixed(2)}',
+                          style: AppStyles.portfolioValue.copyWith(color: textColor)),
                       const SizedBox(height: 4),
                       Text(
                         '▲ ${dailyChangePercent.toStringAsFixed(2)}%',

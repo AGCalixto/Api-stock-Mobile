@@ -82,8 +82,11 @@ class _StocksScreenState extends State<StocksScreen> {
                       width: 120,
                       child: DropdownButtonFormField<String>(
                         value: _selectedInterval,
+                        dropdownColor: Color(0xFF0F1820),
+                        style: const TextStyle(color: Colors.white),
                         items: _intervalOptions
-                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                            .map((e) => DropdownMenuItem(
+                            value: e, child: Text(e, style: const TextStyle(color: Colors.white))))
                             .toList(),
                         onChanged: (value) {
                           if (value != null) {
@@ -100,9 +103,11 @@ class _StocksScreenState extends State<StocksScreen> {
                     SizedBox(
                       width: 100,
                       child: DropdownButtonFormField<String>(
+                        dropdownColor: Color(0xFF0F1820),
                         value: _selectedCurrency,
                         items: _currencyOptions
-                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                            .map((e) => DropdownMenuItem(
+                            value: e, child: Text(e, style: const TextStyle(color: Colors.white))))
                             .toList(),
                         onChanged: (value) {
                           if (value != null) {
@@ -127,6 +132,7 @@ class _StocksScreenState extends State<StocksScreen> {
                   _searchQuery = value;
                 });
               },
+              style: const TextStyle(color: Color(0xFF94A3B8)), // Input Text Color
               decoration: InputDecoration(
                 hintText: 'Search stocks...',
                 prefixIcon: const Icon(Icons.search),
