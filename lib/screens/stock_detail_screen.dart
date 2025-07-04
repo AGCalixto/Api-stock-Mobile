@@ -3,6 +3,7 @@ import 'package:stock_frontend/constants/colors.dart';
 import 'package:stock_frontend/constants/styles.dart';
 import 'package:stock_frontend/models/stock.dart';
 import 'package:stock_frontend/services/api_service.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class StockDetailScreen extends StatefulWidget {
   const StockDetailScreen({super.key});
@@ -14,6 +15,7 @@ class StockDetailScreen extends StatefulWidget {
 class _StockDetailScreenState extends State<StockDetailScreen> {
   final ApiService _apiService = ApiService();
   late Stock _stock;
+  List<double> _priceHistory = [];
   bool _isLoading = true;
   bool _hasError = false;
 
@@ -32,8 +34,10 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
 
     try {
       final stock = await _apiService.fetchStockDetails(symbol);
+      final history = await _apiService.fetchPriceHistory(symbol);
       setState(() {
         _stock = stock;
+        _priceHistory = history;
         _isLoading = false;
       });
     } catch (e) {
@@ -71,7 +75,9 @@ class _StockDetailScreenState extends State<StockDetailScreen> {
             const SizedBox(height: 16),
             _PriceSection(stock: _stock),
             const SizedBox(height: 32),
-            _ChartPlaceholder(),
+            _priceHistory.isEmpty
+                ? const SizedBox(height: 300, child: Center(child: CircularProgressIndicator(color: AppColors.primary))) // better feedback
+                : PriceChart(prices: _priceHistory),
             const SizedBox(height: 32),
             LayoutBuilder(
               builder: (context, constraints) {
@@ -118,14 +124,16 @@ class _StockHeader extends StatelessWidget {
           radius: 30,
           child: Text(
             stock.symbol.substring(0, 1),
-            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.background),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold,
+                color: AppColors.background),
           ),
         ),
         const SizedBox(width: 16),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(stock.symbol, style: Theme.of(context).textTheme.headlineMedium),
+            Text(stock.symbol,
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(color: Colors.white)),
             Text(stock.name, style: const TextStyle(color: AppColors.textSecondary)),
           ],
         ),
@@ -147,7 +155,8 @@ class _PriceSection extends StatelessWidget {
 
     return Row(
       children: [
-        Text('\$${stock.price.toStringAsFixed(2)}', style: AppStyles.stockPrice),
+        Text('\$${stock.price.toStringAsFixed(2)}',
+            style: AppStyles.stockPrice.copyWith(color: Colors.white)),
         const SizedBox(width: 16),
         Text(
           '$symbol ${stock.change.abs().toStringAsFixed(2)} (${stock.changePercent.abs().toStringAsFixed(2)}%)',
@@ -158,17 +167,38 @@ class _PriceSection extends StatelessWidget {
   }
 }
 
-class _ChartPlaceholder extends StatelessWidget {
+class PriceChart extends StatelessWidget {
+  final List<double> prices;
+
+  const PriceChart({required this.prices});
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 300,
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Center(
-        child: Text('Price Chart Placeholder', style: TextStyle(color: AppColors.textSecondary)),
+      child: LineChart(
+        LineChartData(
+          titlesData: FlTitlesData(show: false),
+          gridData: FlGridData(show: false),
+          borderData: FlBorderData(show: false),
+          lineBarsData: [
+            LineChartBarData(
+              spots: List.generate(
+                prices.length,
+                    (i) => FlSpot(i.toDouble(), prices[i]),
+              ),
+              isCurved: true,
+              color: AppColors.primary,
+              barWidth: 3,
+              dotData: FlDotData(show: false),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -191,13 +221,15 @@ class _KeyInfoTable extends StatelessWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(bottom: 8),
-                  child: Text('Market Cap'),
+                  child: Text('Market Cap',
+                  style: TextStyle(color: Colors.white)),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
                     '\$${(stock.marketCap / 1e9).toStringAsFixed(1)}B',
                     textAlign: TextAlign.end,
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -206,13 +238,16 @@ class _KeyInfoTable extends StatelessWidget {
               children: [
                 const Padding(
                   padding: EdgeInsets.only(bottom: 8),
-                  child: Text('Volume'),
+                  child: Text('Volume',
+                  style: TextStyle(color: Colors.white),
+                  ),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
                     '${(stock.volume / 1e6).toStringAsFixed(1)}M',
                     textAlign: TextAlign.end,
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -243,7 +278,7 @@ class _RelatedNews extends StatelessWidget {
           child: const Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Apple announces new product line', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Apple announces new product line', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
               SizedBox(height: 8),
               Text(
                 'Apple Inc. announced a new line of products set to launch next quarter...',
@@ -252,7 +287,7 @@ class _RelatedNews extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               SizedBox(height: 16),
-              Text('Tech stocks surge', style: TextStyle(fontWeight: FontWeight.bold)),
+              Text('Tech stocks surge', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
               SizedBox(height: 8),
               Text(
                 'Tech stocks, including Apple, saw a significant surge in trading today...',

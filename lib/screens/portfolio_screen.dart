@@ -4,40 +4,69 @@ import 'package:stock_frontend/constants/styles.dart';
 import 'package:stock_frontend/models/stock.dart';
 import 'package:stock_frontend/widgets/portfolio_summary_card.dart';
 import 'package:stock_frontend/widgets/stock_card.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:stock_frontend/services/api_service.dart';
 
-class PortfolioScreen extends StatelessWidget {
+class PortfolioScreen extends StatefulWidget {
   const PortfolioScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Stock> holdings = [
-      Stock(
-        symbol: 'AAPL',
-        name: 'Apple Inc.',
-        price: 172.35,
-        change: 2.45,
-        changePercent: 1.44,
-        marketCap: 2.87e12,
-        volume: 54.3e6,
-        high: 182.94,
-        low: 124.17,
-        peRatio: 29.34,
-      ),
-      Stock(
-        symbol: 'MSFT',
-        name: 'Microsoft Corp.',
-        price: 289.12,
-        change: -1.23,
-        changePercent: -0.42,
-        marketCap: 2.19e12,
-        volume: 32.1e6,
-        high: 298.76,
-        low: 245.12,
-        peRatio: 34.12,
-      ),
-      // Add more holdings as needed
-    ];
+  State<PortfolioScreen> createState() => _PortfolioScreenState();
+}
 
+class _PortfolioScreenState extends State<PortfolioScreen> {
+  final ApiService _apiService = ApiService();
+  bool _isLoading = true;
+  bool _hasError = false;
+
+  List<Stock> _holdings = [];
+  List<double> _portfolioHistory = [];
+
+  final List<String> holdingSymbols = ['AAPL', 'MSFT'];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHoldingsAndPerformance();
+  }
+
+  Future<void> _loadHoldingsAndPerformance() async {
+    try {
+      // 1. Obtain updated details of each action
+      final List<Stock> stocks = await Future.wait(
+        holdingSymbols.map((symbol) => _apiService.fetchStockDetails(symbol)),
+      );
+
+      // 2. Obtain price history for each
+      final historyLists = await Future.wait(
+        holdingSymbols.map((symbol) => _apiService.fetchPriceHistory(symbol)),
+      );
+
+      // 3. Calculate portfolio values daily
+      final int days = historyLists.first.length;
+      final List<double> portfolioValues = List.generate(days, (i) {
+        double sum = 0;
+        for (var prices in historyLists) {
+          sum += prices[i];
+        }
+        return sum;
+      });
+
+      setState(() {
+        _holdings = stocks;
+        _portfolioHistory = portfolioValues;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _hasError = true;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Portfolio')),
       body: SingleChildScrollView(
@@ -56,11 +85,16 @@ class PortfolioScreen extends StatelessWidget {
               totalGainLossPercent: 23.5,
             ),
             const SizedBox(height: 32),
-            _HoldingsList(holdings: holdings),
+            _HoldingsList(holdings: _holdings),
             const SizedBox(height: 32),
             const Text('Portfolio Performance', style: AppStyles.sectionHeader),
             const SizedBox(height: 16),
-            const _PerformanceChart(),
+            if (_isLoading)
+              const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            else if (_hasError)
+              const Center(child: Text('Error loading chart', style: TextStyle(color: Colors.red)))
+            else
+              _PortfolioChart(prices: _portfolioHistory),
           ],
         ),
       ),
@@ -104,21 +138,37 @@ class _HoldingsList extends StatelessWidget {
   }
 }
 
-class _PerformanceChart extends StatelessWidget {
-  const _PerformanceChart();
+class _PortfolioChart extends StatelessWidget {
+  final List<double> prices;
+
+  const _PortfolioChart({required this.prices});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 300,
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(12),
       ),
-      child: const Center(
-        child: Text(
-          'Performance Chart Placeholder',
-          style: TextStyle(color: AppColors.textSecondary),
+      child: LineChart(
+        LineChartData(
+          titlesData: FlTitlesData(show: false),
+          gridData: FlGridData(show: false),
+          borderData: FlBorderData(show: false),
+          lineBarsData: [
+            LineChartBarData(
+              spots: List.generate(
+                prices.length,
+                    (i) => FlSpot(i.toDouble(), prices[i]),
+              ),
+              isCurved: true,
+              color: AppColors.primary,
+              barWidth: 3,
+              dotData: FlDotData(show: false),
+            ),
+          ],
         ),
       ),
     );

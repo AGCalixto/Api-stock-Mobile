@@ -31,7 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _fetchData() async {
     setState(() => _isLoading = true);
     final location = await _geolocationService.getCurrentLocation();
-    final stocks = await _apiService.fetchMarketData('NASDAQ');
+    final stocks = await _apiService.fetchMarketData('XNAS'); // XNAS = NASDAQ in MarketStack
+
+    // Other valid options in MarketStack
+    // "XNAS" – NASDAQ
+    // "XNYS" – NYSE
+    // "XTSE" – Toronto Stock Exchange
+    // "XLON" – London Stock Exchange
+    // "XETR" – Frankfurt
 
     setState(() {
       _location = 'Showing data for: $location';

@@ -72,28 +72,32 @@ class _StocksScreenState extends State<StocksScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16,
+              runSpacing: 12,
               children: [
                 const Text('Market Stocks', style: AppStyles.sectionHeader),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
                       width: 120,
                       child: DropdownButtonFormField<String>(
                         value: _selectedInterval,
-                        dropdownColor: Color(0xFF0F1820),
+                        dropdownColor: const Color(0xFF0F1820),
                         style: const TextStyle(color: Colors.white),
                         items: _intervalOptions
                             .map((e) => DropdownMenuItem(
-                            value: e, child: Text(e, style: const TextStyle(color: Colors.white))))
+                            value: e,
+                            child: Text(e, style: const TextStyle(color: Colors.white))))
                             .toList(),
                         onChanged: (value) {
                           if (value != null) {
                             setState(() {
                               _selectedInterval = value;
                             });
-                            // Aquí podrías usar el nuevo intervalo para refetch
                           }
                         },
                         decoration: _dropdownDecoration(),
@@ -103,18 +107,19 @@ class _StocksScreenState extends State<StocksScreen> {
                     SizedBox(
                       width: 100,
                       child: DropdownButtonFormField<String>(
-                        dropdownColor: Color(0xFF0F1820),
                         value: _selectedCurrency,
+                        dropdownColor: const Color(0xFF0F1820),
+                        style: const TextStyle(color: Colors.white),
                         items: _currencyOptions
                             .map((e) => DropdownMenuItem(
-                            value: e, child: Text(e, style: const TextStyle(color: Colors.white))))
+                            value: e,
+                            child: Text(e, style: const TextStyle(color: Colors.white))))
                             .toList(),
                         onChanged: (value) {
                           if (value != null) {
                             setState(() {
                               _selectedCurrency = value;
                             });
-                            // Aquí podrías usar la nueva moneda para refetch
                           }
                         },
                         decoration: _dropdownDecoration(),
@@ -132,7 +137,7 @@ class _StocksScreenState extends State<StocksScreen> {
                   _searchQuery = value;
                 });
               },
-              style: const TextStyle(color: Color(0xFF94A3B8)), // Input Text Color
+              style: const TextStyle(color: Color(0xFF94A3B8)),
               decoration: InputDecoration(
                 hintText: 'Search stocks...',
                 prefixIcon: const Icon(Icons.search),
