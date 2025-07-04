@@ -17,6 +17,15 @@ class _StocksScreenState extends State<StocksScreen> {
   List<Stock> _stocks = [];
   bool _isLoading = true;
 
+  final List<String> _intervalOptions = ['1 Day', '1 Week', '1 Month', '3 Months', '1 Year'];
+  final List<String> _currencyOptions = ['USD', 'EUR', 'GBP', 'JPY'];
+
+  String _selectedInterval = '1 Month';
+  String _selectedCurrency = 'USD';
+  String _searchQuery = '';
+
+  final TextEditingController _searchController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
@@ -32,6 +41,25 @@ class _StocksScreenState extends State<StocksScreen> {
     });
   }
 
+  InputDecoration _dropdownDecoration() {
+    return InputDecoration(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.secondary),
+      ),
+    );
+  }
+
+  List<Stock> _filterStocks() {
+    if (_searchQuery.isEmpty) return _stocks;
+    return _stocks
+        .where((stock) =>
+    stock.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+        stock.symbol.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,45 +72,57 @@ class _StocksScreenState extends State<StocksScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Wrap(
+              alignment: WrapAlignment.spaceBetween,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 16,
+              runSpacing: 12,
               children: [
                 const Text('Market Stocks', style: AppStyles.sectionHeader),
                 Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     SizedBox(
                       width: 120,
                       child: DropdownButtonFormField<String>(
-                        value: '1 Month',
-                        items: ['1 Day', '1 Week', '1 Month', '3 Months', '1 Year']
-                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                        value: _selectedInterval,
+                        dropdownColor: const Color(0xFF0F1820),
+                        style: const TextStyle(color: Colors.white),
+                        items: _intervalOptions
+                            .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e, style: const TextStyle(color: Colors.white))))
                             .toList(),
-                        onChanged: (value) {},
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: AppColors.secondary),
-                          ),
-                        ),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedInterval = value;
+                            });
+                          }
+                        },
+                        decoration: _dropdownDecoration(),
                       ),
                     ),
                     const SizedBox(width: 8),
                     SizedBox(
                       width: 100,
                       child: DropdownButtonFormField<String>(
-                        value: 'USD',
-                        items: ['USD', 'EUR', 'GBP', 'JPY']
-                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                        value: _selectedCurrency,
+                        dropdownColor: const Color(0xFF0F1820),
+                        style: const TextStyle(color: Colors.white),
+                        items: _currencyOptions
+                            .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e, style: const TextStyle(color: Colors.white))))
                             .toList(),
-                        onChanged: (value) {},
-                        decoration: InputDecoration(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 12),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            borderSide: const BorderSide(color: AppColors.secondary),
-                          ),
-                        ),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _selectedCurrency = value;
+                            });
+                          }
+                        },
+                        decoration: _dropdownDecoration(),
                       ),
                     ),
                   ],
@@ -91,6 +131,13 @@ class _StocksScreenState extends State<StocksScreen> {
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+              style: const TextStyle(color: Color(0xFF94A3B8)),
               decoration: InputDecoration(
                 hintText: 'Search stocks...',
                 prefixIcon: const Icon(Icons.search),
@@ -99,7 +146,11 @@ class _StocksScreenState extends State<StocksScreen> {
                   borderSide: const BorderSide(color: AppColors.secondary),
                 ),
                 suffixIcon: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    setState(() {
+                      _searchQuery = _searchController.text;
+                    });
+                  },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     shape: RoundedRectangleBorder(
@@ -113,11 +164,11 @@ class _StocksScreenState extends State<StocksScreen> {
             const SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
-                itemCount: _stocks.length,
+                itemCount: _filterStocks().length,
                 itemBuilder: (context, index) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 16),
-                    child: StockCard(stock: _stocks[index], showDetails: true),
+                    child: StockCard(stock: _filterStocks()[index], showDetails: true),
                   );
                 },
               ),
